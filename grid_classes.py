@@ -122,7 +122,7 @@ class World():
         if save:
             plt.imshow(grid)
             plt.scatter(self.base.state[0],self.base.state[1],marker='x',c="red")
-            result_foldername = result_filename[:-4]+''.join('_'+str(k) for k in gains)[:-1]
+            result_foldername = result_filename[:-4]+''.join('_'+str(k) for k in gains)
             if not os.path.isdir(world_name+"/"+result_foldername):
                 os.makedirs(world_name+"/"+result_foldername)
             plt.savefig(world_name+"/"+result_foldername+"/"+datetime.now().strftime("%Y_%m_%d-%H_%M_%S_%f")+".png")

@@ -15,6 +15,8 @@ from grid_classes import *
 from grid_utils import *
 
 def lyapunov_exploration(w,kq,kQ,kZ,kY,seed_=0,show=False,savefigs=False):
+    if seed_ != 0:
+        savefigs = False
     starttime = time.time()
     random.seed(seed_)
     np.random.seed(seed_)
@@ -35,7 +37,6 @@ def lyapunov_exploration(w,kq,kQ,kZ,kY,seed_=0,show=False,savefigs=False):
     for r in w.get_robots():
         r.share()
 
-    T = 2
     while w.t < T:
 
         w.log_metrics()
@@ -80,9 +81,10 @@ def lyapunov_exploration(w,kq,kQ,kZ,kY,seed_=0,show=False,savefigs=False):
             print("mission failed")
             break
 
-    plt.close()
     print("ENDING GRID")
     w.show_world([kq,kQ,kZ,kY],printout=False,plot=show,save=savefigs)
+    if show:
+        plt.close()
     print("time",w.t)
     print(np.count_nonzero(w.base.grid), "cells explored")
 
@@ -98,15 +100,19 @@ if __name__ == "__main__":
     # result_filename = sys.argv[3]
 
     progress = 1
-    # for kq, kQ, kZ, kY in [[-1,-1,-1,-1],
-    #                       [0,0,0,1],
-    #                       [0.75,0,0,0],[0.95,0,0,0],
-    #                       [0.0001,0,0,500],[0.001,0.001,0.001,1000],
-    #                       [100,0,0,-1],[0.001,0.001,0.001,-1]]:
-    for kq, kQ, kZ, kY in [[0.0001,0,0,500]]:
+    gains = [[-1,-1,-1,-1],[0,0,0,1]]
+    for ratio in [0.25,0.5,0.75,0.9,0.99]:
+        gains.append([ratio,0,0,0])
+    for kq in [0.0001,0.01,1]:
+        for kY in [1,500,1000]:
+            gains.append([kq,0,0,kY])
+    gains.extend([[0,1,0,1],[0,0,1,1],[0.0001,0.001,0,500],[0.0001,0,0.001,500],[0.001,0.001,0.001,1000]])
+    gains.extend([[1,1,1,-1],[1000,1,1,-1],[1,1000,1,-1],[1,1,1000,-1],[1,1,1,-1000]])
+
+    for kq, kQ, kZ, kY in gains:
         processes = []
-        # for seed_ in [0,1,2,3,4,5,6,7,8,9]:
-        for seed_ in [0]:
+        for seed_ in [0,1,2,3,4,5,6,7,8,9]:
+        # for seed_ in [0]:
             print("\nTrial:",progress)
             progress += 1
 
