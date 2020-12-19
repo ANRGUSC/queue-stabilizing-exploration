@@ -39,7 +39,7 @@ def path_plan(s1,s2,grid):
                 if dist_thru_s < dist_to_n:
                     cells[tuple(n)] = [dist_thru_s,s]
                 if n[0] >= 0 and n[0] < grid.shape[0] and n[1] >= 0 and n[1] < grid.shape[1]:
-                    if grid[n[0],n[1]] == 1.0:
+                    if grid[n[0],n[1]] == 1.0: # FREE
                         Q.append(n)
     return s1, np.linalg.norm(np.subtract(s1,s2))
 
@@ -79,7 +79,9 @@ def calc_link_prob(s1, s2, d, grid):
             return 0
 
     x = np.linalg.norm(np.subtract(s1,s2))
-    p = 1/(1+np.e**(3*(x-d)))
+    # TODO choose communication fall off power
+    # p = 1/(1+np.e**(3*(x-d)))
+    p = 1/(1+np.e**(2*(x-d)))
     return p
 
 def sim_link(s1,s2,d,obstacles):
@@ -99,15 +101,14 @@ def sim_link(s1,s2,d,obstacles):
     obstructed = False
     for cell in cells_between:
         row,column = cell
-        # grid[row,column] = 0.5
-        # TODO
         if cell in obstacles and cell != s1 and cell != s2:
-            # grid[row,column] = 0.25
             obstructed = True
 
     if not obstructed:
         x = np.linalg.norm(np.subtract(s1,s2))
-        p = 1/(1+np.e**(3*(x-d)))
+        # TODO choose communication fall off power
+        # p = 1/(1+np.e**(3*(x-d)))
+        p = 1/(1+np.e**(2*(x-d)))
         odds = np.random.random()
         return odds < p
     else:
@@ -148,10 +149,11 @@ def compare(P,S):
         return False
     return np.where(np.logical_and(np.isnan(P),S==1))[0].tolist()
 
+@functools.lru_cache(maxsize=32)
 def disjoint_set(S):
     ''' return all the disjoint products '''
+    S = np.array(S)
     dis_set = np.array(S[0])
-    # print("disjoint set:", dis_set)
     n = len(S)
     for k in range(1,n):
         PDk = [S[k]]
@@ -174,16 +176,20 @@ def disjoint_set(S):
     return dis_set
 
 def fast_probn(edge_probs,n_nodes):
+    starttime = time.time()
     S = paths(n_nodes)
     S[S==0] = np.nan
+    # make tuple in order to cache output of disjoint sets
+    S = tuple(map(tuple, S))
     products = disjoint_set(S)
     edge_probs_repeat = np.tile(edge_probs,(products.shape[0],1))
     p = np.product(np.where(products==1,edge_probs_repeat,1),1)
     q = np.product(np.where(products==0,1-edge_probs_repeat,1),1)
+    # print(time.time()-starttime)
     return np.dot(p,q)
 
 def calc_multihop_link_prob(state1,state2,middle_states,d,grid):
-    ''' Calculate terminal reliability '''
+    ''' Calculate 2-terminal reliability '''
     n_nodes = 2 + len(middle_states)
     n_edges = n_nodes*(n_nodes-1)/2
     edge_probs = []
@@ -223,9 +229,12 @@ def calc_khop_conn(state1,state2,middle_states,d,grid):
 
     return s[index1][index2]
 
-def sim_khop_conn(state1,state2,middle_states,d,obstacles):
+def sim_khop_conn(state1,state2,middle_states_,d,obstacles):
     '''' flip coins for each edge, then return if a simple path exists'''
-    '''use this as a heuristic when number of robots grows'''
+    middle_states = middle_states_.copy()
+    if state2 in middle_states:
+        middle_states.remove(state2)
+
     states = middle_states+[state1,state2]
     k = len(states)-1
 
@@ -248,6 +257,7 @@ def sim_khop_conn(state1,state2,middle_states,d,obstacles):
 
     return s[index1][index2]>0
 
+# not used
 def sim_multihop_link(state1,state2,middle_states,d,obstacles):
     ''' flip coins for each edge, then return if a simple path exists '''
     n_nodes = 2 + len(middle_states)
@@ -274,7 +284,7 @@ def calc_fiedler(states,d,k,grid):
     val, Vec = np.linalg.eigh(L)
     try:
         return np.sort(val)[1]
-    except IndexError:
+    except:
         return 0
 
 # not used
@@ -295,8 +305,8 @@ def calc_rigidity_eigenvalue(states,d,k,grid):
     return np.round(lambda_4)
 
 def calc_CRB(state1,states,d,k,grid):
-    # TODO
     n = len(states)
+    # TODO choose time delay variance
     Vp = 3e8
     sigma_t = 6e-9
     gamma = 1/(Vp*sigma_t)**2
@@ -305,6 +315,7 @@ def calc_CRB(state1,states,d,k,grid):
     FIM = np.zeros((2,2))
     for i in range(n):
         if states[i] != state1:
+            # TODO localization link could have different falloff
             if calc_link_prob(state1,states[i],d,grid) > 0.5:
                 vec = np.subtract(state1,states[i])
                 norm = np.linalg.norm(vec)
