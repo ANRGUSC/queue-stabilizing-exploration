@@ -3,9 +3,9 @@
 for foldername in ./*/*/; do
     cd $foldername;
     ls *.png;
-    convert -delay 5 *.png video.mp4;
+    convert -delay 5 *.png -loop 0 video.gif;
     rm *.png;
-    mv video.mp4 ../"${PWD##*/}".mp4;
+    mv video.gif ../"${PWD##*/}".gif;
     cd ../../;
 done
 

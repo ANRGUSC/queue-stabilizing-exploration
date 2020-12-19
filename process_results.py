@@ -174,24 +174,24 @@ def plot_trade_QorNot(world_name,result_filename,world_size):
 
 
 if __name__ == "__main__":
-    try:
-        f = sys.argv[1]
-        world_name = sys.argv[2]
-        result_filename = sys.argv[3]
-        if world_name == "more_area_world":
-            world_size = 50*50
-        else:
-            world_size = 30*30
+    #try:
+    f = sys.argv[1]
+    world_name = sys.argv[2]
+    result_filename = sys.argv[3]
+    if world_name == "more_area_world":
+        world_size = 50*50
+    else:
+        world_size = 30*30
 
-        if f == "compare_avg_coverage":
-            compare_avg_coverage(world_name,result_filename,world_size)
-        elif f == "plot_trade":
-            plot_trade(world_name,result_filename,world_size)
-        elif f == "plot_trade_QorNot":
-            plot_trade_QorNot(world_name,result_filename,world_size)
-        elif f == "print_data":
-            print_data(world_name,result_filename,world_size)
-        else:
-            print("Function name not recognized.")
-    except:
-        print("Example usage: process_results.py {plot_time_preference, compare_avg_coverage, plot_trade, plot_trade_QorNot, print_data}, {world_name}, {result_filename}, {fig_filename}")
+    if f == "compare_avg_coverage":
+        compare_avg_coverage(world_name,result_filename,world_size)
+    elif f == "plot_trade":
+        plot_trade(world_name,result_filename,world_size)
+    elif f == "plot_trade_QorNot":
+        plot_trade_QorNot(world_name,result_filename,world_size)
+    elif f == "print_data":
+        print_data(world_name,result_filename,world_size)
+    else:
+        print("Function name not recognized.")
+    #except:
+    #    print("Example usage: process_results.py {plot_time_preference, compare_avg_coverage, plot_trade, plot_trade_QorNot, print_data}, {world_name}, {result_filename}, {fig_filename}")
