@@ -112,7 +112,7 @@ def print_data(world_name,result_filename,world_size):
     agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
     agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
     agg_df = agg_df.sort_values("coverage")
-    # print(agg_df)
+    print(agg_df)
 
     for metric in agg_df.columns:
         if metric == "time":
