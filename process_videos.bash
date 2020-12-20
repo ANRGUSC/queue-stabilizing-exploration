@@ -2,7 +2,7 @@
 
 for foldername in ./*/*/; do
     cd $foldername;
-    ls *.png;
+    # ls *.png;
     convert -delay 5 *.png -loop 0 video.gif;
     rm *.png;
     mv video.gif ../"${PWD##*/}".gif;
