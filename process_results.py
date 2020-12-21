@@ -9,7 +9,7 @@ plt.rc('font', family='serif')
 
 def compare_avg_coverage(world_name,result_filename,world_size):
     # fig1, (ax1) = plt.subplots(1,1,figsize=(5,5))
-    fig1, (ax1) = plt.subplots(1,1)
+    fig1, (ax1) = plt.subplots(1,1,figsize=(7,4))
     ax1.set_xlabel("Time")
     ax1.set_ylabel("Map size at data sink (cells)")
     df = pd.read_csv(world_name+'/'+result_filename)
@@ -54,8 +54,8 @@ def compare_avg_coverage(world_name,result_filename,world_size):
     # fig1.legend(loc=7)
     # fig1.tight_layout()
     # fig1.subplots_adjust(right=0.75)
-    # fig1.tight_layout()
-    # plt.autoscale()
+    fig1.tight_layout()
+    plt.autoscale()
     plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison.jpg")
     # plt.show()
     return
