@@ -22,7 +22,7 @@
     "THETA_CRB":200,
     "THETA_FIEDLER":0.1,
     "SHUFFLE":true,
-    "T":1000
-}
+    "T":1000,
 
-/* The robots start positions have changed (they are spread equally around the data sink). */
+    "_comment_":"The robots start positions have changed (they are spread equally around the data sink)."
+}
