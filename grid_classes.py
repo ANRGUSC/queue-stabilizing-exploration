@@ -475,7 +475,8 @@ class Robot():
                 p_conn = calc_multihop_link_prob(space,base,states,TRANSMIT_RADIUS_comm,self.grid)
             else:
                 p_conn = calc_khop_conn(space,base,states,TRANSMIT_RADIUS_comm,self.grid)
-            score = kY*dist_f + kq*p_conn + kQ*fiedler + kZ*CRB
+            # score = kY*dist_f + kq*p_conn + kQ*fiedler + kZ*CRB
+            score = kY*dist_f - kq*p_conn - kQ*fiedler + kZ*CRB
             if score <= best_score:
                 best_score = score
                 best = space
