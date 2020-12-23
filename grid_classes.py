@@ -420,7 +420,7 @@ class Robot():
                 # score = kY*dist_f + kq*self.untransferred_data*(I - B*p_conn) + kQ*self.Q*(THETA_FIEDLER-fiedler) + kZ*self.Z*(CRB-THETA_CRB)
 
                 # delay queue grows with old q
-                score = kY*dist_f - kq*self.q*THETA_DELAY*B*p_conn + kQ*self.Q*(THETA_FIEDLER-fiedler) + kZ*self.Z*(CRB-THETA_CRB)
+                score = kY*dist_f + kq*self.q*(self.untransferred_data - THETA_DELAY*B*p_conn) + kQ*self.Q*(THETA_FIEDLER-fiedler) + kZ*self.Z*(CRB-THETA_CRB)
 
                 # delay queue grows with new q
                 # score = kY*dist_f + kq*self.q*(I - B*p_conn - THETA_DELAY*B*p_conn) + kQ*self.Q*(THETA_FIEDLER-fiedler) + kZ*self.Z*(CRB-THETA_CRB)
