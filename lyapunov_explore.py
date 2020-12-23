@@ -56,7 +56,7 @@ def lyapunov_exploration(w,kq,kQ,kZ,kY,seed_=0,show=False,savefigs=False):
                 best, best_score = r.time_preference_optimize(ratio)
             elif kq == -1 and kQ == -1 and kZ == -1 and kY == -1:
                 best, best_score = r.constrained_optimize()
-            elif kY == -1:
+            elif kY < 0:
                 best, best_score = r.multi_objective_optimize(kq,kQ,kZ,kY)
             else:
                 best, best_score = r.lyapunov_optimize(kq,kQ,kZ,kY)
@@ -100,20 +100,30 @@ if __name__ == "__main__":
     # result_filename = sys.argv[3]
 
     progress = 1
+    seeds = [0,1,2,3,4,5]
     gains = [[-1,-1,-1,-1]]
+    # gains = []
+    # seeds = [0]
+
     for ratio in [0.25,0.5,0.75,0.9,0.99]:
         gains.append([ratio,0,0,0])
 
     for kq in [0,0.00001,0.001,0.1,10,1000]:
         for kQ in [0,0.00001,0.001,0.1,10,1000]:
             for kZ in [0,0.00001,0.001,0.1,10,1000]:
-                for kY in [100,-100]:
+                for kY in [100]:
+                    gains.append([kq,kQ,kZ,kY])
+
+    for kq in [0,0.001,0.1,10,1000,100000]:
+        for kQ in [0,0.00001,0.001,0.1,10,1000]:
+            for kZ in [0,0.00001,0.001,0.1,10]:
+                for kY in [-100]:
                     gains.append([kq,kQ,kZ,kY])
 
     for batch in range(int(len(gains)/4)+1):
         processes = []
         for kq, kQ, kZ, kY in gains[batch*4:(batch+1)*4]:
-            for seed_ in [0,1,2,3,4,5]:
+            for seed_ in seeds:
                 print("\nTrial:",progress)
                 progress += 1
 
