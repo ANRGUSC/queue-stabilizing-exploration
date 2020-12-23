@@ -141,16 +141,18 @@ def print_data(world_name,result_filename,world_size):
     return agg_df
 
 
-def plot_trade_QorNot(world_name,result_filename,world_size):
+def plot_trade_ZorNot(world_name,result_filename,world_size):
         df = pd.read_csv(world_name+'/'+result_filename)
         agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
         agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
         agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
         agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
         agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
-        fig2, ax2 = plt.subplots(1,1) #,figsize=(8,4))
+        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
 
         best_coverage = None
+        constrain = []
+        dont = []
         for dp in range(len(agg_df)):
             if agg_df.index.values[dp] == (0,0,0,1):
                 pass
@@ -161,18 +163,63 @@ def plot_trade_QorNot(world_name,result_filename,world_size):
             elif agg_df.index.values[dp][-1] < 0:
                 pass
             else:
-                if agg_df.index.values[dp][-3] > 0:
-                    ax2.scatter([agg_df["coverage"].values[dp]],[agg_df["percent_localized"].values[dp]],c="red",label=r"constrain $\lambda_2$")
+                if agg_df.index.values[dp][2] > 0:
+                    constrain.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
                 else:
-                    ax2.scatter([agg_df["coverage"].values[dp]],[agg_df["percent_localized"].values[dp]],c="blue",label=r"not constrain $\lambda_2$")
+                    dont.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
 
+        ax2.scatter(np.array(constrain)[:,0],np.array(constrain)[:,1],c="purple",label=r"$k_Z > 0$")
+        ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="teal",label=r"$k_Z =0$")
         ax2.set_xlabel("Map size at data sink (cells)")
         ax2.set_ylabel(r"Time below $\theta_{CRB}$ (\%)")
         # ax2.set_xlim((50,170))
         # cb = fig2.colorbar(sc)
         # cb.set_label(r"$\lambda_{2}$")
-        # ax2.legend()#prop={'size': 10})
-        ax2.set_title("Time localized vs Cells visited: Constrain connectivity?")
+        ax2.legend(loc="upper right")#prop={'size': 10})
+        ax2.set_title(r"Virtual Queue $Z(t)$")
+        fig2.tight_layout()
+        plt.autoscale()
+        plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kZ.jpg")
+        # plt.show()
+        return
+
+def plot_trade_QorNot(world_name,result_filename,world_size):
+        df = pd.read_csv(world_name+'/'+result_filename)
+        # df = df[df["kZ"]==0]
+        agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
+        agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
+        agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
+        agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
+        agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
+        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
+
+        best_coverage = None
+        constrain = []
+        dont = []
+        for dp in range(len(agg_df)):
+            if agg_df.index.values[dp] == (0,0,0,1):
+                pass
+            elif agg_df.index.values[dp] == (-1,-1,-1,-1):
+                pass
+            elif agg_df.index.values[dp][-1] == 0:
+                pass
+            elif agg_df.index.values[dp][-1] < 0:
+                pass
+            else:
+                if agg_df.index.values[dp][1] > 0:
+                    constrain.append([agg_df["coverage"].values[dp],agg_df["fiedler"].values[dp]])
+                else:
+                    dont.append([agg_df["coverage"].values[dp],agg_df["fiedler"].values[dp]])
+
+        ax2.scatter(np.array(constrain)[:,0],np.array(constrain)[:,1],c="purple",label=r"$k_Q > 0$")
+        ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="teal",label=r"$k_Q = 0$")
+        ax2.set_xlabel("Map size at data sink (cells)")
+        ax2.set_ylabel(r"Average Connectivity $\lambda_2$")
+        # ax2.set_xlim((50,170))
+        # cb = fig2.colorbar(sc)
+        # cb.set_label(r"$\lambda_{2}$")
+        ax2.legend(loc="upper right")#prop={'size': 10})
+        ax2.set_title(r"Virtual Queue $Q(t)$")
         fig2.tight_layout()
         plt.autoscale()
         plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kQ.jpg")
@@ -196,6 +243,8 @@ if __name__ == "__main__":
         plot_trade(world_name,result_filename,world_size)
     elif f == "plot_trade_QorNot":
         plot_trade_QorNot(world_name,result_filename,world_size)
+    elif f == "plot_trade_ZorNot":
+        plot_trade_ZorNot(world_name,result_filename,world_size)
     elif f == "print_data":
         print_data(world_name,result_filename,world_size)
     else:
