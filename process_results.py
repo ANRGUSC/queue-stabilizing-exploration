@@ -13,6 +13,7 @@ def compare_avg_coverage(world_name,result_filename,world_size):
     ax1.set_xlabel("Time")
     ax1.set_ylabel("Map size at data sink (cells)")
     df = pd.read_csv(world_name+'/'+result_filename)
+    # df = df[df["kY"]==-100]
     agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'time':['max']})
     agg_df.columns = ["max_time"]
     max_len = max(agg_df["max_time"])+2
@@ -42,7 +43,7 @@ def compare_avg_coverage(world_name,result_filename,world_size):
         elif [kQ, kZ, kY] == [0, 0, 0]:
             # ax1.plot(avg_coverage/count,label="time pref: "+str(kq))
             ax1.plot(avg_coverage/count,c="red")
-        elif kY == -1:
+        elif kY == -100:
             # ax1.plot(avg_coverage/count,label="MO: "+str([kq, kQ, kZ, kY]))
             ax1.plot(avg_coverage/count,c="blue")
         else:
