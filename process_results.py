@@ -88,7 +88,7 @@ def plot_trade(world_name,result_filename,world_size):
     queue_stabilizing = []
 
     for dp in range(len(agg_df)):
-        if agg_df.index.values[dp] == (0,0,0,100) or agg_df.index.values[dp] == (0,0,0,-100):
+        if agg_df.index.values[dp] == (0,0,0,0):
             unconstrained.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
             # ax2.axvline(agg_df["coverage"].values[dp],linestyle="--",c="black")
         elif agg_df.index.values[dp] == (-1,-1,-1,-1):
@@ -118,23 +118,23 @@ def plot_trade(world_name,result_filename,world_size):
     # ax2.set_title("Time localized vs Cells visited")
     fig2.tight_layout()
     plt.autoscale()
-    plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_edited.jpg")
+    plt.savefig(world_name+"/"+result_filename[:-4]+"_trade.jpg")
     # plt.show()
     return
 
 def print_data(world_name,result_filename,world_size):
     df = pd.read_csv(world_name+'/'+result_filename)
     # df = df.sort_values("kQ",ascending=False)
-    df = df[df["kY"]==-100]
-    print(df)
+    # df = df[df["kY"]==-100]
+    # print(df)
     agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
     agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
     agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
     agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
     agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
     agg_df = agg_df.sort_values("percent_localized")
-    agg_df = agg_df[agg_df["coverage"]>300]
-    agg_df = agg_df[agg_df["coverage"]<350]
+    # agg_df = agg_df[agg_df["coverage"]>300]
+    # agg_df = agg_df[agg_df["coverage"]<350]
     print(agg_df)
 
     for metric in agg_df.columns:
