@@ -1,0 +1,26 @@
+{
+    "TRANSMIT_RADIUS_comm":4,
+    "TRANSMIT_RADIUS_uwb":4,
+    "SENSING_RADIUS":1.5,
+    "TIMEOUT":5,
+    "LIFETIME":1000,
+
+    "MTTF":100,
+    "MTTF_preventable":false,
+
+    "UNKNOWN":0.0,
+    "FREE":1.0,
+    "OCCUPIED":-1.0,
+    "TARGET":1.5,
+    "ROBOT":2.0,
+    "DEAD_ROBOT":-0.5,
+    "LOST_ROBOT":0.5,
+
+    "MAX_Q":900,
+    "THETA_DELAY":10,
+    "B":900,
+    "THETA_CRB":200,
+    "THETA_FIEDLER":0.1,
+    "SHUFFLE":true,
+    "T":1000
+}
