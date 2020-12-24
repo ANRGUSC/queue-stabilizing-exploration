@@ -6,6 +6,7 @@ import numpy as np
 matplotlib.rcParams.update({'font.size': 16})
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
+from matplotlib.lines import Line2D
 
 def compare_avg_coverage(world_name,result_filename,world_size):
     # fig1, (ax1) = plt.subplots(1,1,figsize=(5,5))
@@ -50,6 +51,12 @@ def compare_avg_coverage(world_name,result_filename,world_size):
             # ax1.plot(avg_coverage/count,label="queue: "+str([kq, kQ, kZ, kY]))
             ax1.plot(avg_coverage/count,c="green")
 
+    custom_lines = [Line2D([0], [0], color="black"),
+                Line2D([0], [0], color="orange"),
+                Line2D([0], [0], color="red"),
+                Line2D([0], [0], color="blue"),
+                Line2D([0], [0], color="green")]
+    fig1.legend(custom_lines,["strictly constrained", "unconstrained","time preference","multi-objective","queue-stabilizing"])
     # fig1.legend(loc="lower right")
     # fig1.legend(bbox_to_anchor=(1.5,0.5))
     # fig1.legend(loc=7)
@@ -91,7 +98,7 @@ def plot_trade(world_name,result_filename,world_size):
         else:
             queue_stabilizing.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
 
-    # ax2.scatter(np.array(multiobjective)[:,0],np.array(multiobjective)[:,1],c="blue",label="multiobjective")
+    ax2.scatter(np.array(multiobjective)[:,0],np.array(multiobjective)[:,1],c="blue",label="multiobjective")
     ax2.scatter(np.array(queue_stabilizing)[:,0],np.array(queue_stabilizing)[:,1],c="green",label="queue stabilizing")
     ax2.scatter(np.array(unconstrained)[:,0],np.array(unconstrained)[:,1],c="orange",label="unconstrained")
     ax2.scatter(np.array(strictly_constrained)[:,0],np.array(strictly_constrained)[:,1],c="black",label="strictly constrained")
@@ -102,7 +109,7 @@ def plot_trade(world_name,result_filename,world_size):
     # cb = fig2.colorbar(sc)
     # cb.set_label(r"$\lambda_{2}$")
     ax2.legend()#prop={'size': 10})
-    ax2.set_title("Time localized vs Cells visited")
+    # ax2.set_title("Time localized vs Cells visited")
     fig2.tight_layout()
     plt.autoscale()
     plt.savefig(world_name+"/"+result_filename[:-4]+"_trade.jpg")
@@ -112,13 +119,14 @@ def plot_trade(world_name,result_filename,world_size):
 def print_data(world_name,result_filename,world_size):
     df = pd.read_csv(world_name+'/'+result_filename)
     # df = df.sort_values("kQ",ascending=False)
-    # df = df[df["kq"]==0]
+    # df = df[df["kZ"]==1000]
     agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
     agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
     agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
     agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
     agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
-    agg_df = agg_df.sort_values("coverage")
+    agg_df = agg_df.sort_values("percent_localized")
+    agg_df = agg_df[agg_df["percent_localized"]>44]
     print(agg_df)
 
     for metric in agg_df.columns:
@@ -176,7 +184,7 @@ def plot_trade_ZorNot(world_name,result_filename,world_size):
         # cb = fig2.colorbar(sc)
         # cb.set_label(r"$\lambda_{2}$")
         ax2.legend(loc="upper right")#prop={'size': 10})
-        ax2.set_title(r"Virtual Queue $Z(t)$")
+        # ax2.set_title(r"Virtual Queue $Z(t)$")
         fig2.tight_layout()
         plt.autoscale()
         plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kZ.jpg")
@@ -219,7 +227,7 @@ def plot_trade_QorNot(world_name,result_filename,world_size):
         # cb = fig2.colorbar(sc)
         # cb.set_label(r"$\lambda_{2}$")
         ax2.legend(loc="upper right")#prop={'size': 10})
-        ax2.set_title(r"Virtual Queue $Q(t)$")
+        # ax2.set_title(r"Virtual Queue $Q(t)$")
         fig2.tight_layout()
         plt.autoscale()
         plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kQ.jpg")

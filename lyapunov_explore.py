@@ -101,11 +101,11 @@ if __name__ == "__main__":
 
     progress = 1
     seeds = [0,1,2,3,4,5]
-    gains = [[-1,-1,-1,-1]]
-    # gains = []
-    # seeds = [0]
+    batch_size = 4
 
-    for ratio in [0.25,0.5,0.75,0.9,0.99]:
+    gains = [[-1,-1,-1,-1]]
+
+    for ratio in [0.25,0.4,0.5,0.75,0.9,0.99]:
         gains.append([ratio,0,0,0])
 
     for kq in [0,0.00001,0.001,0.1,10,1000]:
@@ -120,11 +120,17 @@ if __name__ == "__main__":
                 for kY in [-100]:
                     gains.append([kq,kQ,kZ,kY])
 
-    for batch in range(int(len(gains)/4)+1):
+    gains.append([0.005,0,0,100],[1000,0,1000,1])
+
+    # gains = [[0.35,0,0,0],[0.45,0,0,0]]
+    # seeds = [0]
+    # batch_size = 1
+
+    for batch in range(int(len(gains)/batch_size)+1):
         processes = []
-        for kq, kQ, kZ, kY in gains[batch*4:(batch+1)*4]:
+        for kq, kQ, kZ, kY in gains[batch*batch_size:(batch+1)*batch_size]:
             for seed_ in seeds:
-                print("\nTrial:",progress)
+                print("\nTrial:",progress,"gains:",(kq,kQ,kZ,kY))
                 progress += 1
 
                 if world_name == "baseline_world":
