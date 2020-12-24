@@ -103,7 +103,7 @@ if __name__ == "__main__":
     seeds = [0,1,2,3,4,5]
     batch_size = 4
 
-    gains = [[-1,-1,-1,-1]]
+    gains = [[0,0,0,0],[-1,-1,-1,-1]]
 
     for ratio in [0.25,0.4,0.5,0.75,0.9,0.99]:
         gains.append([ratio,0,0,0])

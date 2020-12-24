@@ -38,25 +38,28 @@ def compare_avg_coverage(world_name,result_filename,world_size):
         if [kq, kQ, kZ, kY] == [-1, -1, -1, -1]:
             # ax1.plot(avg_coverage/count,label="strictly constrained")
             ax1.plot(avg_coverage/count,c="black")
-        elif [kq, kQ, kZ, kY] == [0, 0, 0, 1]:
+        # elif [kq, kQ, kZ, kY] == [0, 0, 0, 100]:
             # ax1.plot(avg_coverage/count,label="unconstrained")
-            ax1.plot(avg_coverage/count,c="orange")
-        elif [kQ, kZ, kY] == [0, 0, 0]:
+            # ax1.plot(avg_coverage/count,c="orange")
+        # elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0] or [kq, kQ, kZ, kY] == [0.99,0,0,0]:
+        elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0]:
             # ax1.plot(avg_coverage/count,label="time pref: "+str(kq))
             ax1.plot(avg_coverage/count,c="red")
-        elif kY == -100:
+        # elif [kq, kQ, kZ, kY] == [10, 0.1, 0.1, -100] or [kq, kQ, kZ, kY] == [1000, 0.1, 0.1, -100]:
+        elif [kq, kQ, kZ, kY] == [10, 0.1, 0.1, -100]:
             # ax1.plot(avg_coverage/count,label="MO: "+str([kq, kQ, kZ, kY]))
             ax1.plot(avg_coverage/count,c="blue")
-        else:
+        # elif [kq, kQ, kZ, kY] == [0.005,0,0,100] or [kq, kQ, kZ, kY] == [0.001, 1000, 10, 100]:
+        elif [kq, kQ, kZ, kY] == [0.005,0,0,100]:
             # ax1.plot(avg_coverage/count,label="queue: "+str([kq, kQ, kZ, kY]))
             ax1.plot(avg_coverage/count,c="green")
 
-    custom_lines = [Line2D([0], [0], color="black"),
-                Line2D([0], [0], color="orange"),
+    custom_lines = [Line2D([0], [0], color="green"),
+                # Line2D([0], [0], color="orange"),
                 Line2D([0], [0], color="red"),
                 Line2D([0], [0], color="blue"),
-                Line2D([0], [0], color="green")]
-    fig1.legend(custom_lines,["strictly constrained", "unconstrained","time preference","multi-objective","queue-stabilizing"])
+                Line2D([0], [0], color="black")]
+    fig1.legend(custom_lines,["queue-stabilizing","time preference","multi-objective","strictly constrained"], bbox_to_anchor=(1,0.75))
     # fig1.legend(loc="lower right")
     # fig1.legend(bbox_to_anchor=(1.5,0.5))
     # fig1.legend(loc=7)
@@ -64,7 +67,7 @@ def compare_avg_coverage(world_name,result_filename,world_size):
     # fig1.subplots_adjust(right=0.75)
     fig1.tight_layout()
     plt.autoscale()
-    plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison.jpg")
+    plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison_edited.jpg")
     # plt.show()
     return
 
@@ -85,7 +88,7 @@ def plot_trade(world_name,result_filename,world_size):
     queue_stabilizing = []
 
     for dp in range(len(agg_df)):
-        if agg_df.index.values[dp] == (0,0,0,100) or agg_df.index.values[dp] == (0,0,0,-100):
+        if agg_df.index.values[dp] == (0,0,0,0):
             unconstrained.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
             # ax2.axvline(agg_df["coverage"].values[dp],linestyle="--",c="black")
         elif agg_df.index.values[dp] == (-1,-1,-1,-1):
@@ -98,17 +101,20 @@ def plot_trade(world_name,result_filename,world_size):
         else:
             queue_stabilizing.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
 
-    ax2.scatter(np.array(multiobjective)[:,0],np.array(multiobjective)[:,1],c="blue",label="multiobjective")
-    ax2.scatter(np.array(queue_stabilizing)[:,0],np.array(queue_stabilizing)[:,1],c="green",label="queue stabilizing")
-    ax2.scatter(np.array(unconstrained)[:,0],np.array(unconstrained)[:,1],c="orange",label="unconstrained")
-    ax2.scatter(np.array(strictly_constrained)[:,0],np.array(strictly_constrained)[:,1],c="black",label="strictly constrained")
-    ax2.scatter(np.array(time_preference)[:,0],np.array(time_preference)[:,1],c="red",label="time preference")
+    mo = ax2.scatter(np.array(multiobjective)[:,0],np.array(multiobjective)[:,1],c="blue",marker="d",label="multi-objective")
+    qs = ax2.scatter(np.array(queue_stabilizing)[:,0],np.array(queue_stabilizing)[:,1],c="green",marker="x",label="queue stabilizing")
+    un = ax2.scatter(np.array(unconstrained)[:,0],np.array(unconstrained)[:,1],c="orange",marker="s",label="unconstrained")
+    sc = ax2.scatter(np.array(strictly_constrained)[:,0],np.array(strictly_constrained)[:,1],c="black",label="strictly constrained")
+    tp = ax2.scatter(np.array(time_preference)[:,0],np.array(time_preference)[:,1],c="red",marker="v",label="time preference")
     ax2.set_xlabel("Map size at data sink (cells)")
     ax2.set_ylabel(r"Time below $\theta_{CRB}$ (\%)")
     # ax2.set_xlim((50,170))
     # cb = fig2.colorbar(sc)
     # cb.set_label(r"$\lambda_{2}$")
-    ax2.legend()#prop={'size': 10})
+    # ax2.legend(ncol=2)#prop={'size': 10})
+    l1 = ax2.legend([mo,sc],["multi-objective","strictly constrained"],loc="lower left")
+    l2 = ax2.legend([qs, un, tp],["queue-stabilizing","unconstrained","time preference"],loc="upper right")
+    plt.gca().add_artist(l1)
     # ax2.set_title("Time localized vs Cells visited")
     fig2.tight_layout()
     plt.autoscale()
@@ -119,14 +125,16 @@ def plot_trade(world_name,result_filename,world_size):
 def print_data(world_name,result_filename,world_size):
     df = pd.read_csv(world_name+'/'+result_filename)
     # df = df.sort_values("kQ",ascending=False)
-    # df = df[df["kZ"]==1000]
+    # df = df[df["kY"]==-100]
+    # print(df)
     agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
     agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
     agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
     agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
     agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
     agg_df = agg_df.sort_values("percent_localized")
-    agg_df = agg_df[agg_df["percent_localized"]>44]
+    # agg_df = agg_df[agg_df["coverage"]>300]
+    # agg_df = agg_df[agg_df["coverage"]<350]
     print(agg_df)
 
     for metric in agg_df.columns:
