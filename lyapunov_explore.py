@@ -120,7 +120,7 @@ if __name__ == "__main__":
                 for kY in [-100]:
                     gains.append([kq,kQ,kZ,kY])
 
-    gains.append([[0.005,0,0,100],[1000,0,1000,1]])
+    gains.extend([[0.005,0,0,100],[1000,0,1000,1]])
 
     # gains = [[0.35,0,0,0],[0.45,0,0,0]]
     # seeds = [0]
