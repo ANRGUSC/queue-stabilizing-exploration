@@ -32,53 +32,32 @@ def compare_avg_coverage(world_name,result_filename,world_size):
         count = 0
         for draw_line in df["coverage_array"].values:
             count += 1
-            # ax1.plot(eval(draw_line),c="b")
             dl = np.array(eval(draw_line))
             dl = np.pad(dl, ((0,max_len - len(dl))), mode='constant', constant_values=dl[-1])
             avg_coverage += dl
-        if [kq, kQ, kZ, kY] == [-1, -1, -1, -1]:
-            # ax1.plot(avg_coverage/count,label="strictly constrained")
+        if [kq, kQ, kZ, kY] == [-1, -1, -1, -1]: # strictly_constrained
             ax1.plot(avg_coverage/count,c="black")
-        elif [kq, kQ, kZ, kY] == [0, 0, 0, 100]:
-            # ax1.plot(avg_coverage/count,label="unconstrained")
+        elif [kq, kQ, kZ, kY] == [0, 0, 0, 100]: # unconstrained
             ax1.plot(avg_coverage/count,c="orange")
-        # elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0] or [kq, kQ, kZ, kY] == [0.99,0,0,0]:
-        # elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0]:
-        elif [kq, kQ, kZ, kY] == [0.8, 0, 0, 0]:
-            # ax1.plot(avg_coverage/count,label="time pref: "+str(kq))
+        elif [kq, kQ, kZ, kY] == [0.8, 0, 0, 0]: # time pref
             ax1.plot(avg_coverage/count,c="red")
-        # elif [kq, kQ, kZ, kY] == [10, 0.1, 0.1, -100] or [kq, kQ, kZ, kY] == [1000, 0.1, 0.1, -100]:
-        elif [kq, kQ, kZ, kY] == [500, 0, 0, -100]:
-            # ax1.plot(avg_coverage/count,label="MO: "+str([kq, kQ, kZ, kY]))
+        elif [kq, kQ, kZ, kY] == [500, 0, 0, -100]: # multi objective
             ax1.plot(avg_coverage/count,c="deepskyblue")
-        # [kq, kQ, kZ, kY] == [0.005,0,0,100] or [kq, kQ, kZ, kY] == [0.001, 1000, 10, 100]:
-        elif [kq, kQ, kZ, kY] == [0.005,1,0,100]: #[0.005,0,0,100]:
-            # ax1.plot(avg_coverage/count,label="queue: "+str([kq, kQ, kZ, kY]))
+        elif [kq, kQ, kZ, kY] == [0.005,1,0,100]:  # queue stabilizing
             ax1.plot(avg_coverage/count,c="green")
         elif [kq,kQ,kZ,kY] == [0.99,0,0,0]:
             ax1.plot(avg_coverage/count,c="red",linestyle="dashed")
         elif [kq,kQ,kZ,kY] == [1000,0,0,100]:
             ax1.plot(avg_coverage/count,c="green",linestyle="dashed")
 
-    # custom_lines = [Line2D([0], [0], color="green"),
-    #             Line2D([0], [0], color="red"),
-    #             Line2D([0], [0], color="deepskyblue"),
-    #             Line2D([0], [0], color="orange"),
-    #             Line2D([0], [0], color="black")]
     custom_lines = [(Line2D([0], [0], color="green",linestyle="solid"),Line2D([0], [0], color="green",linestyle="dashed")),
                 (Line2D([0], [0], color="red",linestyle="solid"),Line2D([0], [0], color="red",linestyle="dashed")),
                 Line2D([0], [0], color="deepskyblue"),
                 Line2D([0], [0], color="orange"),
                 Line2D([0], [0], color="black")]
     fig1.legend(custom_lines,["QS","TP","MO","UN","SC"], ncol=1, bbox_to_anchor=(0.95,0.75), numpoints=1, handler_map={tuple: HandlerTuple(ndivide=None)})
-    # fig1.legend(loc="lower right")
-    # fig1.legend(bbox_to_anchor=(1.5,0.5))
-    # fig1.legend(loc=7)
-    # fig1.tight_layout()
-    # fig1.subplots_adjust(right=0.75)
     fig1.tight_layout()
-    # plt.autoscale()
-    plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison_NEW.jpg")
+    plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison.jpg")
     # plt.show()
     return
 
@@ -119,24 +98,15 @@ def plot_trade(world_name,result_filename,world_size):
     tp = ax2.scatter(np.array(time_preference)[:,0],np.array(time_preference)[:,1],c="red",marker="v",label="TP")
     ax2.set_xlabel("Map size at data sink (cells)")
     ax2.set_ylabel(r"Time below $\theta_{CRB}$ (\%)")
-    # ax2.set_xlim((50,170))
-    # cb = fig2.colorbar(sc)
-    # cb.set_label(r"$\lambda_{2}$")
-    ax2.legend(ncol=2)#prop={'size': 10})
-    # l1 = ax2.legend([mo,sc],["multi-objective","strictly constrained"],loc="lower left")
-    # l2 = ax2.legend([qs, un, tp],["queue-stabilizing","unconstrained","time preference"],loc="upper right")
-    # plt.gca().add_artist(l1)
-    # ax2.set_title("Time localized vs Cells visited")
+    ax2.legend(ncol=2)
     fig2.tight_layout()
     plt.autoscale()
-    plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_NEW.jpg")
+    plt.savefig(world_name+"/"+result_filename[:-4]+"_trade.jpg")
     # plt.show()
     return
 
 def print_data(world_name,result_filename,world_size):
     df = pd.read_csv(world_name+'/'+result_filename)
-    # df = df.sort_values("kQ",ascending=False)
-    df = df[df["kY"]>0]
     # df = df[df["kY"]==0]
     # df = df[df["kq"]==0.005]
     # df = df[df["kQ"]==1000]
@@ -167,8 +137,6 @@ def print_data(world_name,result_filename,world_size):
             print("max",metric)
             print(agg_df[agg_df[metric] == max(agg_df[metric])])
 
-    # agg_df = agg_df[agg_df["percent_localized"]>30]
-    # agg_df = agg_df[agg_df["coverage"]>105]
     return agg_df
 
 
@@ -203,11 +171,7 @@ def plot_trade_ZorNot(world_name,result_filename,world_size):
         ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="black",marker="v",label=r"$\neg k_Z$")
         ax2.set_xlabel("Map size at data sink (cells)")
         ax2.set_ylabel(r"Time below $\theta_{CRB}$ (\%)")
-        # ax2.set_xlim((50,170))
-        # cb = fig2.colorbar(sc)
-        # cb.set_label(r"$\lambda_{2}$")
         ax2.legend(loc="upper right")#prop={'size': 10})
-        # ax2.set_title(r"Virtual Queue $Z(t)$")
         fig2.tight_layout()
         plt.autoscale()
         plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kZ.jpg")
@@ -255,11 +219,7 @@ def plot_trade_QorNot(world_name,result_filename,world_size):
         ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="black",marker="v",label=r"$\neg k_Q, \neg k_q$")
         ax2.set_xlabel("Map size at data sink (cells)")
         ax2.set_ylabel(r"Average Connectivity ${\lambda_2}_D$")
-        # ax2.set_xlim((50,170))
-        # cb = fig2.colorbar(sc)
-        # cb.set_label(r"$\lambda_{2}$")
-        ax2.legend() #loc="upper right")#prop={'size': 10})
-        # ax2.set_title(r"Virtual Queue $Q(t)$")
+        ax2.legend()
         fig2.tight_layout()
         plt.autoscale()
         plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kQ.jpg")
@@ -271,46 +231,6 @@ def connectivity_v_gain(world_name,result_filename, world_size):
         print(df.corr()["average_fiedler"])
         print(df.corr()["average_CRB"])
         return
-
-        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
-        ax2.scatter(np.log10(df['kq']),df['average_fiedler'])
-        plt.show()
-
-        return
-
-        # print(df.corr()["average_fiedler"])
-        # return
-        df = df[df["kY"]>1e-10]
-        df = df[df["kq"]>0]
-        df = df[df["kQ"]>0]
-        df = df[df["kZ"]>0]
-        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
-        kq_df = df.groupby(['kq']).agg({'average_fiedler':'mean'})
-        ax2.plot(np.log10(kq_df.index.values), kq_df['average_fiedler'])
-        kQ_df = df.groupby(['kQ']).agg({'average_fiedler':'mean'})
-        ax2.plot(np.log10(kQ_df.index.values), kQ_df['average_fiedler'])
-        kZ_df = df.groupby(['kZ']).agg({'average_fiedler':'mean'})
-        ax2.plot(np.log10(kZ_df.index.values), kZ_df['average_fiedler'])
-        # print(kZ_df.index.values,kZ_df['average_fiedler'])
-        plt.show()
-        return
-
-
-        df = df[df["kY"]>0]
-        # df = df[df["kq"]>0]
-        # df = df[df["kQ"]>0]
-        # df = df[df["kZ"]==0]
-        agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
-        agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
-        agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
-        agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
-        agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
-        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
-
-        print(df["kq"])
-        # print(df["average_fiedler"])
-        ax2.bar(np.log10(df["kq"].values), df["average_fiedler"].values)
-        plt.show()
 
 
 if __name__ == "__main__":
