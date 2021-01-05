@@ -44,6 +44,11 @@ VIEWING SIMULATIONS
 
 To view the outcome of a simulation, navigate to the world folder (e.g. `baseline_world`). Then navigate to one of the subfolders associated with a configuration file. The folder `gifs_configX` will contains .gif videos of one trial of the simulation.
 
-Naming convention: Each .gif file is named by four numbers. [0, 0, 0, 0] indicates unconstrained exploration. [-1, -1 ,-1, -1] indicates strictly constrained exploration. [X, 0, 0, 0] indicates time preference exploration with rho = X. [X, Y, Z, W] with W \< \0 indicates multi-objective exploration with weights w1, w2, w3, w4 = X, Y, Z, -W. [X, Y, Z, W] with W \> \0 indicates queue-stabilizing exploration (our novel contribution) with gains kq, kQ, kZ, kY = X, Y, Z, W.
-
+Naming convention: Each .gif file is named by four numbers.   
+[0, 0, 0, 0] indicates unconstrained exploration.   
+[-1, -1 ,-1, -1] indicates strictly constrained exploration.   
+[X, 0, 0, 0] indicates time preference exploration with rho = X.   
+[X, Y, Z, W] with W \< \0 indicates multi-objective exploration with weights w1, w2, w3, w4 = X, Y, Z, -W.   
+[X, Y, Z, W] with W \> \0 indicates queue-stabilizing exploration (our novel contribution) with gains kq, kQ, kZ, kY = X, Y, Z, W.  
+  
 Please reach out to lilliamc@usc.edu with any questions or issues.
