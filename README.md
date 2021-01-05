@@ -28,7 +28,7 @@ information-theoretic unconstrained exploration and (2) a 2.87x
 improvement in average connectivity and 28% improvement in
 localizability relative to strictly constrained exploration.
 
-A video summarizing this work in under 3 minutes can be found in the folder `RAL_multimedia`.
+A video summarizing this work in under 3 minutes can be found in the folder `RAL_multimedia`.  
 (An older video summarizing a previous version can be found here [https://youtu.be/xKM0vvIVHX8].)
 
 USAGE:
