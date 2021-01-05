@@ -4,31 +4,31 @@ Motivated by planetary exploration, we consider
 the problem of deploying a network of mobile robots to
 explore an unknown environment and share information with
 a stationary data sink. The configuration of robots affects both
-the accuracy of relative localization and network connectivity.
+network connectivity and the accuracy of relative localization.
 Robots explore autonomously and can store data locally in
 their queues. When a communication path exists to the data
 sink, robots transfer their data. Because robots may fail
 in a non-deterministic manner, causing loss of the data in
 their queues, enabling communication is important. However,
 strict constraints on connectivity and relative positions limit
-exploration. To take a more flexible approach to managing
-these multiple objectives, we use Lyapunov-based stochastic
-optimization to maximize new information while using real and
-virtual queues to constrain time average expectations of metrics
-of interest. These include the size of the data queue, the network
-connectivity, and the localization performance. The result is a
-distributed online controller which autonomously and strategically 
-breaks and restores connectivity as needed. We explicitly
-account for obstacle avoidance, limited sensing ranges, and
-noisy communication/ranging links with line-of-sight occlusions.
-We demonstrate the performance of our controller in simulation
-with special attention to local optima and limit cycles, and
-show (1) up to 13% improvement in coverage over purely
-information-theoretic unconstrained exploration and (2) a 2.87x
-improvement in average connectivity and 28% improvement in
-localizability relative to strictly constrained exploration.
+exploration. To take a more flexible approach to managing these
+multiple objectives, we use Lyapunov-based stochastic optimiza-
+tion to maximize new information while using virtual queues to
+constrain time-average expectations of metrics of interest. These
+include queueing delay, network connectivity, and localization
+uncertainty. The result is a distributed online controller which
+autonomously and strategically breaks and restores connectivity
+as needed. We explicitly account for obstacle avoidance, limited
+sensing ranges, and noisy communication/ranging links with
+line-of-sight occlusions. We use queuing theory to analyze the
+average delay experienced by data in our system and guarantee
+connectivity will be recovered when feasible. We demonstrate
+in simulation that our queue-stabilizing controller can reduce
+localization uncertainty and achieve better coverage than two
+state of the art approaches.
 
-The video accompanying this work can be found here [https://youtu.be/xKM0vvIVHX8].
+A video summarizing this work in under 3 minutes can be found in the folder `RAL_multimedia`.  
+(An older video summarizing a previous version can be found here [https://youtu.be/xKM0vvIVHX8].)
 
 USAGE:
 
@@ -40,10 +40,15 @@ USAGE:
 
 `grid_utils.py` contains several additional utility functions.
 
-VIEWING SIMULATIONS
+VIEWING SIMULATIONS:
 
 To view the outcome of a simulation, navigate to the world folder (e.g. `baseline_world`). Then navigate to one of the subfolders associated with a configuration file. The folder `gifs_configX` will contains .gif videos of one trial of the simulation.
 
-Naming convention: Each .gif file is named by four numbers. [0, 0, 0, 0] indicates unconstrained exploration. [-1, -1 ,-1, -1] indicates strictly constrained exploration. [X, 0, 0, 0] indicates time preference exploration with rho = X. [X, Y, Z, W] with W \< \0 indicates multi-objective exploration with weights w1, w2, w3, w4 = X, Y, Z, -W. [X, Y, Z, W] with W \> \0 indicates queue-stabilizing exploration (our novel contribution) with gains kq, kQ, kZ, kY = X, Y, Z, W.
-
+Naming convention: Each .gif file is named by four numbers.   
+[0, 0, 0, 0] indicates unconstrained exploration.   
+[-1, -1 ,-1, -1] indicates strictly constrained exploration.   
+[X, 0, 0, 0] indicates time preference exploration with rho = X.   
+[X, Y, Z, W] with W \< 0 indicates multi-objective exploration with weights w1, w2, w3, w4 = X, Y, Z, -W.   
+[X, Y, Z, W] with W \> 0 indicates queue-stabilizing exploration (our novel contribution) with gains kq, kQ, kZ, kY = X, Y, Z, W.  
+  
 Please reach out to lilliamc@usc.edu with any questions or issues.
