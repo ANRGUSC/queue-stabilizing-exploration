@@ -7,6 +7,7 @@ matplotlib.rcParams.update({'font.size': 16})
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 from matplotlib.lines import Line2D
+from matplotlib.legend_handler import HandlerLine2D, HandlerTuple
 
 def compare_avg_coverage(world_name,result_filename,world_size):
     # fig1, (ax1) = plt.subplots(1,1,figsize=(5,5))
@@ -38,36 +39,46 @@ def compare_avg_coverage(world_name,result_filename,world_size):
         if [kq, kQ, kZ, kY] == [-1, -1, -1, -1]:
             # ax1.plot(avg_coverage/count,label="strictly constrained")
             ax1.plot(avg_coverage/count,c="black")
-        # elif [kq, kQ, kZ, kY] == [0, 0, 0, 100]:
+        elif [kq, kQ, kZ, kY] == [0, 0, 0, 100]:
             # ax1.plot(avg_coverage/count,label="unconstrained")
-            # ax1.plot(avg_coverage/count,c="orange")
+            ax1.plot(avg_coverage/count,c="orange")
         # elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0] or [kq, kQ, kZ, kY] == [0.99,0,0,0]:
-        elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0]:
+        # elif [kq, kQ, kZ, kY] == [0.35, 0, 0, 0]:
+        elif [kq, kQ, kZ, kY] == [0.8, 0, 0, 0]:
             # ax1.plot(avg_coverage/count,label="time pref: "+str(kq))
             ax1.plot(avg_coverage/count,c="red")
         # elif [kq, kQ, kZ, kY] == [10, 0.1, 0.1, -100] or [kq, kQ, kZ, kY] == [1000, 0.1, 0.1, -100]:
-        elif [kq, kQ, kZ, kY] == [10, 0.1, 0.1, -100]:
+        elif [kq, kQ, kZ, kY] == [500, 0, 0, -100]:
             # ax1.plot(avg_coverage/count,label="MO: "+str([kq, kQ, kZ, kY]))
-            ax1.plot(avg_coverage/count,c="blue")
-        # elif [kq, kQ, kZ, kY] == [0.005,0,0,100] or [kq, kQ, kZ, kY] == [0.001, 1000, 10, 100]:
-        elif [kq, kQ, kZ, kY] == [0.005,0,0,100]:
+            ax1.plot(avg_coverage/count,c="deepskyblue")
+        # [kq, kQ, kZ, kY] == [0.005,0,0,100] or [kq, kQ, kZ, kY] == [0.001, 1000, 10, 100]:
+        elif [kq, kQ, kZ, kY] == [0.005,1,0,100]: #[0.005,0,0,100]:
             # ax1.plot(avg_coverage/count,label="queue: "+str([kq, kQ, kZ, kY]))
             ax1.plot(avg_coverage/count,c="green")
+        elif [kq,kQ,kZ,kY] == [0.99,0,0,0]:
+            ax1.plot(avg_coverage/count,c="red",linestyle="dashed")
+        elif [kq,kQ,kZ,kY] == [1000,0,0,100]:
+            ax1.plot(avg_coverage/count,c="green",linestyle="dashed")
 
-    custom_lines = [Line2D([0], [0], color="green"),
-                # Line2D([0], [0], color="orange"),
-                Line2D([0], [0], color="red"),
-                Line2D([0], [0], color="blue"),
+    # custom_lines = [Line2D([0], [0], color="green"),
+    #             Line2D([0], [0], color="red"),
+    #             Line2D([0], [0], color="deepskyblue"),
+    #             Line2D([0], [0], color="orange"),
+    #             Line2D([0], [0], color="black")]
+    custom_lines = [(Line2D([0], [0], color="green",linestyle="solid"),Line2D([0], [0], color="green",linestyle="dashed")),
+                (Line2D([0], [0], color="red",linestyle="solid"),Line2D([0], [0], color="red",linestyle="dashed")),
+                Line2D([0], [0], color="deepskyblue"),
+                Line2D([0], [0], color="orange"),
                 Line2D([0], [0], color="black")]
-    fig1.legend(custom_lines,["queue-stabilizing","time preference","multi-objective","strictly constrained"], bbox_to_anchor=(1,0.75))
+    fig1.legend(custom_lines,["QS","TP","MO","UN","SC"], ncol=1, bbox_to_anchor=(0.95,0.75), numpoints=1, handler_map={tuple: HandlerTuple(ndivide=None)})
     # fig1.legend(loc="lower right")
     # fig1.legend(bbox_to_anchor=(1.5,0.5))
     # fig1.legend(loc=7)
     # fig1.tight_layout()
     # fig1.subplots_adjust(right=0.75)
     fig1.tight_layout()
-    plt.autoscale()
-    plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison_edited.jpg")
+    # plt.autoscale()
+    plt.savefig(world_name+"/"+result_filename[:-4]+"_comparison_NEW.jpg")
     # plt.show()
     return
 
@@ -88,7 +99,7 @@ def plot_trade(world_name,result_filename,world_size):
     queue_stabilizing = []
 
     for dp in range(len(agg_df)):
-        if agg_df.index.values[dp] == (0,0,0,0):
+        if agg_df.index.values[dp] == (0,0,0,0) or agg_df.index.values[dp] == (0,0,0,-100):
             unconstrained.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
             # ax2.axvline(agg_df["coverage"].values[dp],linestyle="--",c="black")
         elif agg_df.index.values[dp] == (-1,-1,-1,-1):
@@ -98,43 +109,47 @@ def plot_trade(world_name,result_filename,world_size):
             time_preference.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
         elif agg_df.index.values[dp][-1] < 0:
             multiobjective.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
-        else:
+        elif agg_df.index.values[dp][0] > 0 and agg_df["coverage"].values[dp] < 818:
             queue_stabilizing.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
 
-    mo = ax2.scatter(np.array(multiobjective)[:,0],np.array(multiobjective)[:,1],c="blue",marker="d",label="multi-objective")
-    qs = ax2.scatter(np.array(queue_stabilizing)[:,0],np.array(queue_stabilizing)[:,1],c="green",marker="x",label="queue stabilizing")
-    un = ax2.scatter(np.array(unconstrained)[:,0],np.array(unconstrained)[:,1],c="orange",marker="s",label="unconstrained")
-    sc = ax2.scatter(np.array(strictly_constrained)[:,0],np.array(strictly_constrained)[:,1],c="black",label="strictly constrained")
-    tp = ax2.scatter(np.array(time_preference)[:,0],np.array(time_preference)[:,1],c="red",marker="v",label="time preference")
+    mo = ax2.scatter(np.array(multiobjective)[:,0],np.array(multiobjective)[:,1],c="deepskyblue",marker="d",label="MO")
+    sc = ax2.scatter(np.array(strictly_constrained)[:,0],np.array(strictly_constrained)[:,1],c="black",label="SC")
+    qs = ax2.scatter(np.array(queue_stabilizing)[:,0],np.array(queue_stabilizing)[:,1],c="green",marker="x",label="QS")
+    un = ax2.scatter(np.array(unconstrained)[:,0],np.array(unconstrained)[:,1],c="orange",marker="s",label="UN")
+    tp = ax2.scatter(np.array(time_preference)[:,0],np.array(time_preference)[:,1],c="red",marker="v",label="TP")
     ax2.set_xlabel("Map size at data sink (cells)")
     ax2.set_ylabel(r"Time below $\theta_{CRB}$ (\%)")
     # ax2.set_xlim((50,170))
     # cb = fig2.colorbar(sc)
     # cb.set_label(r"$\lambda_{2}$")
-    # ax2.legend(ncol=2)#prop={'size': 10})
-    l1 = ax2.legend([mo,sc],["multi-objective","strictly constrained"],loc="lower left")
-    l2 = ax2.legend([qs, un, tp],["queue-stabilizing","unconstrained","time preference"],loc="upper right")
-    plt.gca().add_artist(l1)
+    ax2.legend(ncol=2)#prop={'size': 10})
+    # l1 = ax2.legend([mo,sc],["multi-objective","strictly constrained"],loc="lower left")
+    # l2 = ax2.legend([qs, un, tp],["queue-stabilizing","unconstrained","time preference"],loc="upper right")
+    # plt.gca().add_artist(l1)
     # ax2.set_title("Time localized vs Cells visited")
     fig2.tight_layout()
     plt.autoscale()
-    plt.savefig(world_name+"/"+result_filename[:-4]+"_trade.jpg")
+    plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_NEW.jpg")
     # plt.show()
     return
 
 def print_data(world_name,result_filename,world_size):
     df = pd.read_csv(world_name+'/'+result_filename)
     # df = df.sort_values("kQ",ascending=False)
-    # df = df[df["kY"]==-100]
+    df = df[df["kY"]>0]
+    # df = df[df["kY"]==0]
+    # df = df[df["kq"]==0.005]
+    # df = df[df["kQ"]==1000]
+    # df = df[df["kZ"]==0]
     # print(df)
     agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
     agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
     agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
     agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
     agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
-    agg_df = agg_df.sort_values("percent_localized")
-    # agg_df = agg_df[agg_df["coverage"]>300]
-    # agg_df = agg_df[agg_df["coverage"]<350]
+    # agg_df = agg_df.sort_values("coverage")
+    # agg_df = agg_df[agg_df["fiedler"]>1]
+    # agg_df = agg_df[agg_df["coverage"]>646]
     print(agg_df)
 
     for metric in agg_df.columns:
@@ -143,7 +158,7 @@ def print_data(world_name,result_filename,world_size):
         elif metric == "CRB":
             print("min",metric)
             print(agg_df[agg_df[metric] == min(agg_df[metric])])
-        elif metric == "max_queue":
+        elif metric == "max_queue" or metric == "fiedler":
             print("max",metric)
             print(agg_df[agg_df[metric] == max(agg_df[metric])])
             print("min",metric)
@@ -184,8 +199,8 @@ def plot_trade_ZorNot(world_name,result_filename,world_size):
                 else:
                     dont.append([agg_df["coverage"].values[dp],agg_df["percent_localized"].values[dp]])
 
-        ax2.scatter(np.array(constrain)[:,0],np.array(constrain)[:,1],c="purple",label=r"$k_Z > 0$")
-        ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="teal",label=r"$k_Z =0$")
+        ax2.scatter(np.array(constrain)[:,0],np.array(constrain)[:,1],c="green",marker="x",label=r"$k_Z$")
+        ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="black",marker="v",label=r"$\neg k_Z$")
         ax2.set_xlabel("Map size at data sink (cells)")
         ax2.set_ylabel(r"Time below $\theta_{CRB}$ (\%)")
         # ax2.set_xlim((50,170))
@@ -201,6 +216,7 @@ def plot_trade_ZorNot(world_name,result_filename,world_size):
 
 def plot_trade_QorNot(world_name,result_filename,world_size):
         df = pd.read_csv(world_name+'/'+result_filename)
+        df = df[df["kY"]>0]
         # df = df[df["kZ"]==0]
         agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
         agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
@@ -211,6 +227,8 @@ def plot_trade_QorNot(world_name,result_filename,world_size):
 
         best_coverage = None
         constrain = []
+        constrainq = []
+        both = []
         dont = []
         for dp in range(len(agg_df)):
             if agg_df.index.values[dp] == (0,0,0,1):
@@ -222,25 +240,77 @@ def plot_trade_QorNot(world_name,result_filename,world_size):
             elif agg_df.index.values[dp][-1] < 0:
                 pass
             else:
-                if agg_df.index.values[dp][1] > 0:
+                if agg_df.index.values[dp][1] > 0 and agg_df.index.values[dp][0] == 0:
                     constrain.append([agg_df["coverage"].values[dp],agg_df["fiedler"].values[dp]])
+                elif agg_df.index.values[dp][1] == 0 and agg_df.index.values[dp][0] > 0:
+                    constrainq.append([agg_df["coverage"].values[dp],agg_df["fiedler"].values[dp]])
+                elif agg_df.index.values[dp][1] > 0 and agg_df.index.values[dp][0] > 0:
+                    both.append([agg_df["coverage"].values[dp],agg_df["fiedler"].values[dp]])
                 else:
                     dont.append([agg_df["coverage"].values[dp],agg_df["fiedler"].values[dp]])
 
-        ax2.scatter(np.array(constrain)[:,0],np.array(constrain)[:,1],c="purple",label=r"$k_Q > 0$")
-        ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="teal",label=r"$k_Q = 0$")
+        ax2.scatter(np.array(constrainq)[:,0],np.array(constrainq)[:,1],c="orange",marker="x",label=r"$\neg k_Q, k_q$")
+        ax2.scatter(np.array(both)[:,0],np.array(both)[:,1],c="yellowgreen",marker="x",label=r"$k_Q, k_q$")
+        ax2.scatter(np.array(constrain)[:,0],np.array(constrain)[:,1],c="green",marker="v",label=r"$k_Q, \neg k_q$")
+        ax2.scatter(np.array(dont)[:,0],np.array(dont)[:,1],c="black",marker="v",label=r"$\neg k_Q, \neg k_q$")
         ax2.set_xlabel("Map size at data sink (cells)")
-        ax2.set_ylabel(r"Average Connectivity $\lambda_2$")
+        ax2.set_ylabel(r"Average Connectivity ${\lambda_2}_D$")
         # ax2.set_xlim((50,170))
         # cb = fig2.colorbar(sc)
         # cb.set_label(r"$\lambda_{2}$")
-        ax2.legend(loc="upper right")#prop={'size': 10})
+        ax2.legend() #loc="upper right")#prop={'size': 10})
         # ax2.set_title(r"Virtual Queue $Q(t)$")
         fig2.tight_layout()
         plt.autoscale()
         plt.savefig(world_name+"/"+result_filename[:-4]+"_trade_kQ.jpg")
         # plt.show()
         return
+
+def connectivity_v_gain(world_name,result_filename, world_size):
+        df = pd.read_csv(world_name+'/'+result_filename)
+        print(df.corr()["average_fiedler"])
+        print(df.corr()["average_CRB"])
+        return
+
+        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
+        ax2.scatter(np.log10(df['kq']),df['average_fiedler'])
+        plt.show()
+
+        return
+
+        # print(df.corr()["average_fiedler"])
+        # return
+        df = df[df["kY"]>1e-10]
+        df = df[df["kq"]>0]
+        df = df[df["kQ"]>0]
+        df = df[df["kZ"]>0]
+        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
+        kq_df = df.groupby(['kq']).agg({'average_fiedler':'mean'})
+        ax2.plot(np.log10(kq_df.index.values), kq_df['average_fiedler'])
+        kQ_df = df.groupby(['kQ']).agg({'average_fiedler':'mean'})
+        ax2.plot(np.log10(kQ_df.index.values), kQ_df['average_fiedler'])
+        kZ_df = df.groupby(['kZ']).agg({'average_fiedler':'mean'})
+        ax2.plot(np.log10(kZ_df.index.values), kZ_df['average_fiedler'])
+        # print(kZ_df.index.values,kZ_df['average_fiedler'])
+        plt.show()
+        return
+
+
+        df = df[df["kY"]>0]
+        # df = df[df["kq"]>0]
+        # df = df[df["kQ"]>0]
+        # df = df[df["kZ"]==0]
+        agg_df = df.groupby(['kq','kQ','kZ','kY']).agg({'coverage':['mean'],'time':['mean','sum'],'time_connected':['sum'],'average_fiedler':['mean'],'time_localized':['sum'],'average_CRB':['mean'],'max_queue':['max']})
+        agg_df.columns = ["coverage","time","time_total","time_connected","fiedler","time_localized","CRB","max_queue"]
+        agg_df["percent_connected"] = agg_df["time_connected"]/agg_df["time_total"]*100
+        agg_df["percent_localized"] = agg_df["time_localized"]/agg_df["time_total"]*100
+        agg_df = agg_df.drop(["time_total","time_connected","time_localized"],1)
+        fig2, ax2 = plt.subplots(1,1,figsize=(4,4))
+
+        print(df["kq"])
+        # print(df["average_fiedler"])
+        ax2.bar(np.log10(df["kq"].values), df["average_fiedler"].values)
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -261,9 +331,11 @@ if __name__ == "__main__":
         plot_trade_QorNot(world_name,result_filename,world_size)
     elif f == "plot_trade_ZorNot":
         plot_trade_ZorNot(world_name,result_filename,world_size)
+    elif f == "connectivity_v_gain":
+        connectivity_v_gain(world_name,result_filename,world_size)
     elif f == "print_data":
         print_data(world_name,result_filename,world_size)
     else:
         print("Function name not recognized.")
-    #except:
-    #    print("Example usage: process_results.py {plot_time_preference, compare_avg_coverage, plot_trade, plot_trade_QorNot, print_data}, {world_name}, {result_filename}, {fig_filename}")
+    except:
+       print("Example usage: process_results.py {plot_time_preference, compare_avg_coverage, plot_trade, plot_trade_QorNot, print_data}, {world_name}, {result_filename}")

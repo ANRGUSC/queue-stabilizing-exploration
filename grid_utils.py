@@ -81,7 +81,8 @@ def calc_link_prob(s1, s2, d, grid):
     x = np.linalg.norm(np.subtract(s1,s2))
     # TODO choose communication fall off power
     # p = 1/(1+np.e**(3*(x-d)))
-    p = 1/(1+np.e**(2*(x-d)))
+    # p = 1/(1+np.e**(2*(x-d)))
+    p = 1/(1+np.e**(1*(x-d)))
     return p
 
 def sim_link(s1,s2,d,obstacles):

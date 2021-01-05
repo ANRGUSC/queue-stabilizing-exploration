@@ -332,7 +332,7 @@ class Robot():
             else:
                 score = np.inf
 
-            if score <= best_score:
+            if score < best_score:
                 best_score = score
                 best = space
 
@@ -386,6 +386,7 @@ class Robot():
         for r in self.known_states.keys():
             states.append(self.known_states[r][0])
 
+        # TODO should this be the actual link rather than the expectation?
         if calc_link_prob(current, base, TRANSMIT_RADIUS_comm,self.grid) > 0.5:
             self.stuck = False
 
@@ -535,6 +536,7 @@ class Robot():
         else:
             # print("Not exploring because Q_MAX has been exceeded, returning to base")
             self.stuck = True
+            print("q_max was reached, not exploring")
 
     def share(self):
         k = len(self.world.get_robots())
