@@ -101,6 +101,7 @@ if __name__ == "__main__":
 
     progress = 1
     seeds = [0,1,2,3,4,5]
+    # increase batch size if running on additional CPUs
     batch_size = 4
 
     gains = [[0,0,0,0],[-1,-1,-1,-1]]
@@ -119,12 +120,6 @@ if __name__ == "__main__":
             for kZ in [0,0.00001,0.001,0.1,10]:
                 for kY in [-100]:
                     gains.append([kq,kQ,kZ,kY])
-
-    gains.append([[0.005,0,0,100],[1000,0,1000,1]])
-
-    # gains = [[0.35,0,0,0],[0.45,0,0,0]]
-    # seeds = [0]
-    # batch_size = 1
 
     for batch in range(int(len(gains)/batch_size)+1):
         processes = []

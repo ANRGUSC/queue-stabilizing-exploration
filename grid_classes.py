@@ -287,7 +287,6 @@ class Robot():
         if (np.count_nonzero(self.grid)-self.untransferred_data)/np.count_nonzero(self.grid) < ratio:
             # print(np.count_nonzero(self.grid), self.untransferred_data, "return")
             for space in cspace:
-                # TODO pathplan could just return the next point as the best
                 _, score = path_plan(space,base,self.grid)
                 if score <= best_score:
                     best = space
@@ -332,7 +331,7 @@ class Robot():
             else:
                 score = np.inf
 
-            if score <= best_score:
+            if score < best_score:
                 best_score = score
                 best = space
 
@@ -386,6 +385,7 @@ class Robot():
         for r in self.known_states.keys():
             states.append(self.known_states[r][0])
 
+        # TODO should this be the actual link rather than the expectation?
         if calc_link_prob(current, base, TRANSMIT_RADIUS_comm,self.grid) > 0.5:
             self.stuck = False
 
@@ -399,7 +399,6 @@ class Robot():
             # score is dist to base until unstuck
             if self.stuck:
                 _, score = path_plan(space,base,self.grid)
-                # TODO consider breaking local optima towards frontier if q is empty
 
             else:
                 # f = self.find_closest_frontier(search_stop,space)
@@ -480,7 +479,6 @@ class Robot():
             if score <= best_score:
                 best_score = score
                 best = space
-        # TODO allow this to get stuck?
         return best, best_score
 
 
@@ -535,6 +533,7 @@ class Robot():
         else:
             # print("Not exploring because Q_MAX has been exceeded, returning to base")
             self.stuck = True
+            print("q_max was reached, not exploring")
 
     def share(self):
         k = len(self.world.get_robots())
@@ -546,7 +545,7 @@ class Robot():
         emptied_q = False
         self.conn = sim_khop_conn(self.state, self.world.base.state, middle_states, TRANSMIT_RADIUS_comm, self.world.obstacles)
         if self.conn:
-            # TODO empty queue if link!
+            # empty queue if link!
             self.untransferred_data = max(self.untransferred_data-B,0)
             self.q = max(self.q - THETA_DELAY*B, 0) + self.u
             emptied_q = True
@@ -570,7 +569,7 @@ class Robot():
                     for target in self.known_targets:
                         if target not in r.known_targets:
                             r.known_targets.append(target)
-                    # TODO if this robot is closer, has space in its queue, and I wasn't able to empty my queue directly
+                    # if this robot is closer, has space in its queue, and I wasn't able to empty my queue directly
                     if r.untransferred_data < MAX_Q:
                         if np.linalg.norm(np.subtract(r.state,self.world.base.state)) < np.linalg.norm(np.subtract(self.state,self.world.base.state)):
                             if not emptied_q:
